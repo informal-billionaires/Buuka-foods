@@ -1,0 +1,100 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@800;900&family=Poppins:wght@300;400;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base tokens & global defaults */
+:root{
+  --bukka-primary: #FF9900;
+  --bukka-primary-deep: #E68500;
+  --bukka-warm : #FFA733;
+  --bukka-black: #000011;
+  --bukka-white: #FFFFFF;
+  --bukka-cream: #FFF3D8;
+  --bukka-charcoal: #222222;
+  --bukka-lightgray: #EAEAEA;
+  --radius-xl: 1rem;
+}
+
+/* Body */
+html, body, #__next { height: 100%; }
+body {
+  @apply bg-neutral-black text-neutral-white;
+  font-family: Poppins, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.4;
+}
+
+/* Headings use Baloo 2 */
+h1,h2,h3,h4 {
+  font-family: "Baloo 2", "Poppins", sans-serif;
+  color: var(--bukka-white);
+}
+
+/* Hero heading style */
+.hero-heading {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Shadows & glows */
+.shadow-soft-lg { box-shadow: 0 14px 40px rgba(0,0,0,0.6); }
+.shadow-btn-glow { box-shadow: 0 10px 30px rgba(255,153,0,0.18), 0 0 24px rgba(230,133,0,0.08); }
+
+/* Rounded images */
+img { display: block; max-width: 100%; height: auto; }
+
+/* Ensure pitch black background */
+body { background-color: #000000; }
+
+/* make sure @tailwind directives are at the top of this file */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* existing tokens and rules... */
+
+/* ensure the orange primary token is present */
+:root {
+  --bukka-primary: #FF9900;
+}
+
+/* If you want a CSS helper for .bg-primary when using normal CSS (Tailwind already handles it),
+   the new controls use Tailwind classes directly so no extra @apply is required. */
+
+/* Optional: stronger shadow for carousel controls if you want to fine-tune */
+.carousel-strong-shadow {
+  box-shadow: 0 14px 30px rgba(0,0,0,0.55), 0 6px 18px rgba(255,153,0,0.08);
+}
+
+/* hide scrollbar cross-browser */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;             /* Chrome, Safari, Opera */
+}
+
+/* ensure smooth JS scroll fallback */
+.scroll-smooth {
+  scroll-behavior: smooth;
+}
+
+/* add brand tokens if not present */
+:root {
+  --primary: #ff7a00; /* orange brand */
+}
+
+/* utility for primary */
+.text-primary { color: var(--primary); }
+.bg-primary { background-color: var(--primary); }
+
+/* soften page background and font */
+body { background-color: #fff; }
+
+/* small card shadows */
+.shadow-2xl { box-shadow: 0 20px 50px rgba(0,0,0,0.45); }
