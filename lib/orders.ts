@@ -20,7 +20,7 @@ export type Order = {
   deliveryFee: number;
   subtotal: number;
   total: number;
-  status: 'placed';
+  status: 'placed' | 'preparing' | 'in_transit' | 'delivered' | 'declined' | 'cancelled';
 };
 
 // Input shape when placing a new order — no id/createdAt yet, Supabase generates both
@@ -141,6 +141,49 @@ export async function updateOrderStatus(orderId: string, newStatus: string) {
 
   if (error) throw error;
   return data;
+}
+
+export async function rateOrder(orderId: string, rating: number): Promise<boolean> {
+  if (rating < 1 || rating > 5) {
+    console.error('rateOrder: rating must be between 1 and 5');
+    return false;
+  }
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return false;
+
+  const { error } = await supabase
+    .from('order_ratings')
+    .upsert(
+      { order_id: orderId, customer_id: user.id, rating },
+      { onConflict: 'order_id' }
+    );
+
+  if (error) {
+    console.error('rateOrder failed', error);
+    return false;
+  }
+  return true;
+}
+
+export async function getRatingsForOrders(orderIds: string[]): Promise<Record<string, number>> {
+  if (orderIds.length === 0) return {};
+
+  const { data, error } = await supabase
+    .from('order_ratings')
+    .select('order_id, rating')
+    .in('order_id', orderIds);
+
+  if (error || !data) {
+    console.error('getRatingsForOrders failed', error);
+    return {};
+  }
+
+  const map: Record<string, number> = {};
+  for (const row of data) {
+    map[row.order_id] = row.rating;
+  }
+  return map;
 }
 
 function mapItem(row: any): OrderCartItem {

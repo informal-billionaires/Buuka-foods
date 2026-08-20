@@ -283,3 +283,4 @@ export async function getFeaturedMenuItems(limit = 6): Promise<Array<{
     return [];
   }
 }
+

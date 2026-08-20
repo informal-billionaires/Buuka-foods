@@ -2,7 +2,8 @@
 module.exports = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx}",
-    "./components/**/*.{js,ts,jsx,tsx}"
+    "./components/**/*.{js,ts,jsx,tsx}",
+    "./lib/**/*.{js,ts,jsx,tsx}"
   ],
   darkMode: 'class',
   theme: {
@@ -24,7 +25,10 @@ module.exports = {
           success: '#28A745',
           warning: '#FFC107',
           error: '#DC3545'
-        }
+        },
+        surface: '#FFFFFF',
+        page: '#FAFAFA',
+        muted: '#737373'
       },
       fontFamily: {
         heading: ['"Baloo 2"', 'cursive'],

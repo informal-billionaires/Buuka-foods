@@ -6,7 +6,7 @@ import NavBar from '../../components/NavBar';
 import MenuItemRow from '../../components/MenuItemRow';
 import CartDrawer from '../../components/CartDrawer';
 import FulfillmentToggle from '../../components/FulfillmentToggle';
-import { saveOrder, Order } from '../../lib/orders';
+import { saveOrder, Order, NewOrder } from '../../lib/orders';
 import { getRestaurantById, getPricedMenuForRestaurant, Restaurant, PricedMenuItem } from '../../lib/restaurants';
 import { supabase } from '../../lib/supabaseClient';
 
@@ -17,12 +17,14 @@ import { supabase } from '../../lib/supabaseClient';
 
 type CartItem = {
   id: string;
+  key: string;
+  itemId: string;
   menuItemId: string;
   name: string;
   price: number;
+  unitPrice: number;
   qty: number;
   notes?: string;
-  // other fields as used by CartDrawer / checkout flow...
 };
 
 const PENDING_CHECKOUT_KEY = 'bukkaPendingCheckout';
@@ -91,12 +93,7 @@ export default function RestaurantPage() {
       return;
     }
 
-    const orderId = `order-${Date.now()}`;
-    const createdAt = new Date().toISOString();
-
-    const order: Order = {
-      id: orderId,
-      createdAt,
+    const newOrder: NewOrder = {
       restaurantId: restaurant!.id,
       restaurantName: restaurant!.name,
       items: cart.map(c => ({
@@ -106,7 +103,7 @@ export default function RestaurantPage() {
         unitPrice: c.price,
         qty: c.qty,
         size: undefined,
-        customizations: c.notes ? c.notes.split(', ') : [],
+        customizations: [],
       })),
       fulfillment: fulfillmentType,
       deliveryFee: fulfillmentType === 'delivery' ? deliveryFee : 0,
@@ -115,12 +112,17 @@ export default function RestaurantPage() {
       status: 'placed',
     };
 
-    saveOrder(order);
+    const savedOrder = await saveOrder(newOrder);
+
+    if (!savedOrder) {
+      alert('Something went wrong placing your order. Please try again.');
+      return;
+    }
+
     setCart([]);
     setDrawerOpen(false);
-    router.push(`/orders/${orderId}`);
+    router.push(`/orders/${savedOrder.id}`);
   }
-
   // -------------------------
   // Data loading useEffect
   // -------------------------
@@ -317,16 +319,17 @@ export default function RestaurantPage() {
                             openPanelItemId={openPanelItemId}
                             setOpenPanelItemId={setOpenPanelItemId}
                             onConfirm={(payload: any) => addOrMergeCartItem({
-                              id: payload.itemId,
-                              key: payload.itemId,
-                              menuItemId: payload.itemId,
-                              name: payload.name,
-                              price: payload.unitPrice,
-                              unitPrice: payload.unitPrice,
-                              qty: payload.qty,
-                              notes: payload.customizations?.join(', '),
-                            })}
-                          />
+                            id: payload.itemId,
+                            key: payload.itemId,
+                            itemId: payload.itemId,
+                            menuItemId: payload.itemId,
+                            name: payload.name,
+                            price: payload.unitPrice,
+                            unitPrice: payload.unitPrice,
+                            qty: payload.qty,
+                            notes: payload.customizations?.join(', '),
+                          })}
+                                                    />
                         ))}
                       </div>
                     </section>
