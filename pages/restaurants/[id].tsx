@@ -53,9 +53,9 @@ export default function RestaurantPage() {
 
   function addOrMergeCartItem(newItem: CartItem) {
     setCart(prev => {
-      const existing = prev.find(i => i.id === newItem.id);
+      const existing = prev.find(i => i.key === newItem.key);
       if (!existing) return [...prev, newItem];
-      return prev.map(i => i.id === newItem.id ? { ...i, qty: i.qty + newItem.qty } : i);
+      return prev.map(i => i.key === newItem.key ? { ...i, qty: i.qty + newItem.qty } : i);
     });
   }
 
@@ -320,7 +320,7 @@ export default function RestaurantPage() {
                             setOpenPanelItemId={setOpenPanelItemId}
                             onConfirm={(payload: any) => addOrMergeCartItem({
                             id: payload.itemId,
-                            key: payload.itemId,
+                            key: makeCartKey(item, payload.size, payload.customizations?.join(',')),
                             itemId: payload.itemId,
                             menuItemId: payload.itemId,
                             name: payload.name,

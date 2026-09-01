@@ -308,7 +308,7 @@ export default function OrdersPage() {
               ) : (
                 <>
                   <div className="flex items-center gap-2 mb-3">
-                    <h2 className="text-sm font-semibold">Active Order</h2>
+                    <h2 className="text-sm font-semibold text-neutral-900">Active Order</h2>
                     <span className="px-2 py-0.5 rounded-full bg-status-success/10 text-status-success text-xs font-semibold flex items-center gap-1">
                       <span className="w-1.5 h-1.5 rounded-full bg-status-success inline-block" />
                       Live
@@ -374,16 +374,16 @@ export default function OrdersPage() {
             </div>
           )}
 
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-6 pb-4 border-b border-neutral-200">
-            <div className="flex items-center gap-5">
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+            <div className="flex items-center gap-2">
               {(['all', 'active', 'delivered', 'cancelled'] as TabKey[]).map(t => (
                 <button
                   key={t}
                   onClick={() => setTab(t)}
-                  className={`text-sm pb-1 border-b-2 transition-colors ${
+                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                     tab === t
-                      ? 'border-primary text-neutral-900 font-semibold'
-                      : 'border-transparent text-muted font-medium'
+                      ? 'bg-primary text-neutral-white'
+                      : 'bg-surface border border-neutral-200 text-muted'
                   }`}
                 >
                   {t === 'all' ? 'All Orders' : t.charAt(0).toUpperCase() + t.slice(1)}

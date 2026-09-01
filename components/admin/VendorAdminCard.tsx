@@ -18,9 +18,11 @@ export interface VendorAdminCardProps {
     pending_latitude: number | null;
     pending_longitude: number | null;
     pending_submitted_at: string | null;
+    escalation_threshold_minutes: number | null;
   } | null;
   onStatusChange: (vendorId: string, status: Vendor['status']) => void;
   onMarginSaved: (vendorId: string, percentage: number, marginRow: Margin) => void;
+  onThresholdSaved: (vendorId: string, thresholdMinutes: number) => void;
 }
 
 export default function VendorAdminCard({
@@ -30,10 +32,15 @@ export default function VendorAdminCard({
   restaurant,
   onStatusChange,
   onMarginSaved,
+  onThresholdSaved,
 }: VendorAdminCardProps) {
   const [statusLoading, setStatusLoading] = useState(false);
   const [marginValue, setMarginValue] = useState<number>(margin?.percentage ?? 15);
   const [marginLoading, setMarginLoading] = useState(false);
+  const [thresholdValue, setThresholdValue] = useState<number>(
+    restaurant?.escalation_threshold_minutes ?? 30
+  );
+  const [thresholdLoading, setThresholdLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // local copy of restaurant for optimistic updates and UI after approve/reject
@@ -98,7 +105,26 @@ export default function VendorAdminCard({
       setMarginLoading(false);
     }
   }
-
+  async function saveThreshold() {
+    if (!localRestaurant?.id) return;
+    setError(null);
+    setThresholdLoading(true);
+    try {
+      const { error: updateErr } = await supabase
+        .from('restaurants')
+        .update({ escalation_threshold_minutes: Number(thresholdValue) })
+        .eq('id', localRestaurant.id);
+      if (updateErr) {
+        setError(updateErr.message || 'Failed to save escalation threshold');
+        return;
+      }
+      onThresholdSaved(vendor.id, Number(thresholdValue));
+    } catch (err: any) {
+      setError(err?.message || 'Unexpected error saving threshold');
+    } finally {
+      setThresholdLoading(false);
+    }
+  }
   function statusBadge(status?: Vendor['status']) {
     if (status === 'approved') return <span className="px-2 py-1 rounded-full bg-green-500 text-black text-xs font-semibold">Approved</span>;
     if (status === 'rejected') return <span className="px-2 py-1 rounded-full bg-rose-400 text-black text-xs font-semibold">Rejected</span>;
@@ -270,11 +296,11 @@ export default function VendorAdminCard({
   }
 
   return (
-    <div className="bg-neutral-950 rounded-2xl p-4">
+    <div className="bg-white border border-neutral-100 rounded-2xl p-4 shadow-sm">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <div className="flex items-center gap-3">
-            <div className="text-base font-semibold">{vendor.business_name || 'Unnamed'}</div>
+            <div className="text-base font-semibold text-neutral-900">{vendor.business_name || 'Unnamed'}</div>
             {statusBadge(vendor.status)}
             {noRestaurant ? (
               <div className="text-sm text-orange-400 ml-2">⚠️ No restaurant created</div>
@@ -283,7 +309,7 @@ export default function VendorAdminCard({
             ) : null}
           </div>
 
-          <div className="mt-2 text-sm text-neutral-400">
+          <div className="mt-2 text-sm text-neutral-500">
             <div>{vendor.cuisine || '—'}</div>
             <div className="mt-1 text-xs text-neutral-500">{vendor.email || '—'}</div>
             <div className="mt-1 text-xs text-neutral-500">{vendor.phone || '—'}</div>
@@ -292,7 +318,7 @@ export default function VendorAdminCard({
         </div>
 
         <div className="flex flex-col items-end gap-3">
-          <div className="text-sm font-semibold">Added {vendor.created_at ? new Date(vendor.created_at).toLocaleDateString() : '—'}</div>
+          <div className="text-sm font-semibold text-neutral-500">Added {vendor.created_at ? new Date(vendor.created_at).toLocaleDateString() : '—'}</div>
 
           <div className="flex items-center gap-2">
             {vendor.status === 'pending' && (
@@ -308,7 +334,7 @@ export default function VendorAdminCard({
                 <button
                   onClick={() => updateStatus('rejected')}
                   disabled={statusLoading}
-                  className="px-3 py-1.5 rounded-full bg-neutral-white/5 text-sm"
+                  className="px-3 py-1.5 rounded-full bg-neutral-100 text-neutral-700 text-sm"
                 >
                   {statusLoading ? 'Saving…' : 'Reject'}
                 </button>
@@ -318,23 +344,45 @@ export default function VendorAdminCard({
         </div>
       </div>
 
-      <div className="mt-4 border-t border-neutral-800 pt-3">
+      <div className="mt-4 border-t border-neutral-100 pt-3">
         <div className="flex items-center gap-3">
-          <label className="text-sm text-neutral-400">Margin (%)</label>
+          <label className="text-sm text-neutral-500">Margin (%)</label>
           <input
             type="number"
             value={marginValue}
             onChange={(e) => setMarginValue(Number(e.target.value))}
-            className="w-24 px-2 py-1 rounded-md bg-neutral-900 border border-neutral-800 text-sm"
+            className="w-24 px-2 py-1 rounded-md bg-white border border-neutral-200 text-neutral-900 text-sm"
             min={0}
             max={100}
           />
           <button
             onClick={saveMargin}
             disabled={marginLoading}
-            className={`px-3 py-1.5 rounded-full text-sm font-semibold ${marginLoading ? 'bg-neutral-white/5 text-neutral-500' : 'bg-primary text-black'}`}
+            className={`px-3 py-1.5 rounded-full text-sm font-semibold ${marginLoading ? 'bg-neutral-100 text-neutral-400' : 'bg-primary text-black'}`}
           >
             {marginLoading ? 'Saving…' : 'Save'}
+          </button>
+        </div>
+        <div className="mt-3 flex items-center gap-2">
+          <label className="text-sm text-neutral-500">Escalation threshold (min)</label>
+          <input
+            type="number"
+            min={1}
+            value={thresholdValue}
+            disabled={!localRestaurant?.id || thresholdLoading}
+            onChange={(e) => setThresholdValue(Number(e.target.value))}
+            className="w-24 px-2 py-1 rounded-md bg-white border border-neutral-200 text-neutral-900 text-sm disabled:bg-neutral-100 disabled:text-neutral-400"
+          />
+          <button
+            onClick={saveThreshold}
+            disabled={!localRestaurant?.id || thresholdLoading}
+            className={`px-3 py-1.5 rounded-full text-sm font-semibold ${
+              !localRestaurant?.id || thresholdLoading
+                ? 'bg-neutral-100 text-neutral-400'
+                : 'bg-primary text-black'
+            }`}
+          >
+            {thresholdLoading ? 'Saving…' : 'Save'}
           </button>
         </div>
 
@@ -343,9 +391,9 @@ export default function VendorAdminCard({
 
       {/* Pending changes panel (render when there's a pending submission) */}
       {hasPending && (
-        <div className="mt-4 bg-neutral-900 rounded-xl p-4">
+        <div className="mt-4 bg-neutral-50 border border-neutral-100 rounded-xl p-4">
           <div className="flex items-center gap-2 mb-3">
-            <div className="text-sm text-yellow-400 font-semibold">🕒 Pending changes</div>
+            <div className="text-sm text-yellow-600 font-semibold">🕒 Pending changes</div>
             <div className="text-xs text-neutral-500">Submitted {localRestaurant?.pending_submitted_at ? new Date(localRestaurant.pending_submitted_at).toLocaleString() : '—'}</div>
           </div>
 
@@ -405,13 +453,13 @@ export default function VendorAdminCard({
             <button
               onClick={verifyWithMyLocation}
               disabled={verifying}
-              className={`px-3 py-1.5 rounded-full text-sm font-semibold ${verifying ? 'bg-neutral-white/5 text-neutral-500' : 'bg-primary text-black'}`}
+              className={`px-3 py-1.5 rounded-full text-sm font-semibold ${verifying ? 'bg-neutral-100 text-neutral-400' : 'bg-primary text-black'}`}
             >
               {verifying ? 'Checking…' : 'Verify with my location'}
             </button>
 
             {verifyError && <div className="text-sm text-rose-400">{verifyError}</div>}
-            {verifyDistanceKm != null && <div className="text-sm text-neutral-400">You are approximately {verifyDistanceKm.toFixed(1)} km from the submitted location.</div>}
+            {verifyDistanceKm != null && <div className="text-sm text-neutral-500">You are approximately {verifyDistanceKm.toFixed(1)} km from the submitted location.</div>}
           </div>
 
           {/* Approve / Reject actions */}
@@ -419,7 +467,7 @@ export default function VendorAdminCard({
             <button
               onClick={approveChanges}
               disabled={approving}
-              className={`px-4 py-2 rounded-full text-sm font-semibold ${approving ? 'bg-neutral-white/5 text-neutral-500' : 'bg-primary text-black'}`}
+              className={`px-4 py-2 rounded-full text-sm font-semibold ${approving ? 'bg-neutral-100 text-neutral-400' : 'bg-primary text-black'}`}
             >
               {approving ? 'Approving…' : 'Approve changes'}
             </button>
@@ -427,7 +475,7 @@ export default function VendorAdminCard({
             <button
               onClick={rejectChanges}
               disabled={rejecting}
-              className={`px-4 py-2 rounded-full text-sm ${rejecting ? 'bg-neutral-white/5 text-neutral-500' : 'bg-neutral-white/5'}`}
+              className={`px-4 py-2 rounded-full text-sm ${rejecting ? 'bg-neutral-100 text-neutral-400' : 'bg-neutral-100 text-neutral-700'}`}
             >
               {rejecting ? 'Rejecting…' : 'Reject changes'}
             </button>
