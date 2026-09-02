@@ -8,6 +8,7 @@ import VendorAdminCard from '../../components/admin/VendorAdminCard';
 import { getAdminStats, AdminStats, getOrdersByStatus, StatusCount, getOrdersLast7Days, DayCount } from '../../lib/adminStats';
 import OrdersByStatusDonut from '../../components/admin/OrdersByStatusDonut';
 import OrdersOverviewChart from '../../components/admin/OrdersOverviewChart';
+import { useRef } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 
 interface RestaurantInfo {
@@ -54,6 +55,14 @@ export default function AdminDashboardPage() {
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [statusCounts, setStatusCounts] = useState<StatusCount[]>([]);
   const [dailyCounts, setDailyCounts] = useState<DayCount[]>([]);
+
+  const pendingVendorCount = vendors.filter(v => v.status === 'pending').length;
+  const pendingOrderCount = statusCounts.find(s => s.status === 'placed')?.count ?? 0;
+  const vendorListRef = useRef<HTMLDivElement>(null);
+
+  function scrollToVendors() {
+    vendorListRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }
 
   useEffect(() => {
     let mounted = true;
@@ -364,6 +373,36 @@ export default function AdminDashboardPage() {
             </div>
           )}
 
+          <div className="mt-6 bg-white border border-neutral-100 rounded-2xl p-6 shadow-sm">
+            <div className="text-sm font-semibold text-neutral-900 mb-4">Quick Actions</div>
+            <div className="space-y-2">
+              <button
+                onClick={scrollToVendors}
+                disabled={pendingVendorCount === 0}
+                className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-neutral-50 hover:bg-neutral-100 text-sm text-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <span>Approve vendors</span>
+                {pendingVendorCount > 0 && (
+                  <span className="bg-primary text-black text-xs font-semibold rounded-full px-2 py-0.5">
+                    {pendingVendorCount}
+                  </span>
+                )}
+              </button>
+              <div className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-neutral-50 text-sm text-neutral-400 cursor-not-allowed">
+                <span>View pending orders {pendingOrderCount > 0 ? `(${pendingOrderCount})` : ''}</span>
+                <span className="text-xs bg-neutral-100 text-neutral-500 rounded-full px-2 py-0.5">Soon</span>
+              </div>
+              <div className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-neutral-50 text-sm text-neutral-400 cursor-not-allowed">
+                <span>Manage riders</span>
+                <span className="text-xs bg-neutral-100 text-neutral-500 rounded-full px-2 py-0.5">Soon</span>
+              </div>
+              <div className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-neutral-50 text-sm text-neutral-400 cursor-not-allowed">
+                <span>Create promotion</span>
+                <span className="text-xs bg-neutral-100 text-neutral-500 rounded-full px-2 py-0.5">Soon</span>
+              </div>
+            </div>
+          </div>
+
           {overdueOrders.length > 0 && (
             <div className="mt-6 bg-rose-50 border border-rose-200 rounded-2xl p-4">
               <div className="text-sm font-semibold text-rose-700 mb-3">
@@ -392,7 +431,7 @@ export default function AdminDashboardPage() {
             </div>
           )}
 
-          <div className="mt-6 space-y-4">
+          <div className="mt-6 space-y-4" ref={vendorListRef}>
             {vendorsLoading ? (
               <div className="bg-white border border-neutral-100 rounded-2xl p-6 shadow-sm text-neutral-500">Loading vendors…</div>
             ) : vendorsError ? (
