@@ -229,7 +229,7 @@ export async function getTopSellingItems(restaurantId: string, limit = 3) {
         itemMap[item.name] = {
           revenue: 0,
           orderCount: 0,
-          image: item.menu_items?.image ?? null,
+          image: item.menu_items?.[0]?.image ?? null,
         };
       }
       itemMap[item.name].revenue += item.unit_price * item.qty;
