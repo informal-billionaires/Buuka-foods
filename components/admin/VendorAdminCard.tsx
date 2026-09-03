@@ -86,7 +86,7 @@ export default function VendorAdminCard({
 
       // upsert margin row by vendor_id (onConflict vendor_id)
       const { data, error: upsertErr } = await supabase
-        .from<Margin>('margins')
+         .from('margins')
         .upsert([payload], { onConflict: 'vendor_id' })
         .select()
         .single();
@@ -231,19 +231,24 @@ export default function VendorAdminCard({
 
       if (updated) {
         // optimistic/local update: replace localRestaurant with updated values
-        setLocalRestaurant({
-          id: updated.id,
-          vendor_id: updated.vendor_id,
-          name: updated.name ?? null,
-          location: updated.location ?? null,
-          latitude: typeof updated.latitude === 'number' ? updated.latitude : (updated.latitude == null ? null : Number(updated.latitude)),
-          longitude: typeof updated.longitude === 'number' ? updated.longitude : (updated.longitude == null ? null : Number(updated.longitude)),
-          pending_name: null,
-          pending_location: null,
-          pending_latitude: null,
-          pending_longitude: null,
-          pending_submitted_at: null,
-        });
+        setLocalRestaurant(prev =>
+  prev
+    ? {
+        ...prev,
+        name: updated.name ?? null,
+        location: updated.location ?? null,
+        latitude:
+          updated.latitude == null ? null : Number(updated.latitude),
+        longitude:
+          updated.longitude == null ? null : Number(updated.longitude),
+        pending_name: null,
+        pending_location: null,
+        pending_latitude: null,
+        pending_longitude: null,
+        pending_submitted_at: null,
+      }
+    : prev
+);
       }
     } catch (err: any) {
       setError(err?.message || 'Unexpected error approving changes');
