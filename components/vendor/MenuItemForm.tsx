@@ -43,7 +43,7 @@ export default function MenuItemForm({ restaurantId, onAdded }: MenuItemFormProp
       };
 
       const { data: inserted, error: insertErr } = await supabase
-        .from<MenuItem>('menu_items')
+        .from('menu_items')
         .insert(payload)
         .select()
         .single();
