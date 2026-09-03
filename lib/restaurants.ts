@@ -104,7 +104,7 @@ export type PricedMenuItem = {
 export async function getApprovedRestaurants(): Promise<Restaurant[]> {
   try {
     const { data, error } = await supabase
-      .from<RestaurantRow & { vendors?: { status?: string } }>('restaurants')
+      .from('restaurants')
       .select('*, vendors!inner(status)')
       .eq('vendors.status', 'approved');
 
@@ -144,7 +144,7 @@ export async function getApprovedRestaurants(): Promise<Restaurant[]> {
 export async function getRestaurantById(id: string): Promise<Restaurant | null> {
   try {
     const { data, error } = await supabase
-      .from<RestaurantRow & { vendors?: { status?: string } }>('restaurants')
+      .from('restaurants')
       .select('*, vendors!inner(status)')
       .eq('id', id)
       .eq('vendors.status', 'approved')
@@ -189,7 +189,7 @@ export async function getRestaurantById(id: string): Promise<Restaurant | null> 
 export async function getMenuItemsForRestaurant(restaurantId: string): Promise<MenuItem[]> {
   try {
     const { data, error } = await supabase
-      .from<MenuItemRow>('menu_items')
+      .from('menu_items')
       .select('*')
       .eq('restaurant_id', restaurantId)
       .order('category', { ascending: true, nullsFirst: false })

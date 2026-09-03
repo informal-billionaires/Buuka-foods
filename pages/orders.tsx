@@ -16,6 +16,7 @@ import {
 import { supabase } from '../lib/supabaseClient';
 import { Star, Calendar, Store, ListFilter, ChevronDown } from 'lucide-react';
 import { getRestaurantById, Restaurant } from '../lib/restaurants';
+import type { JSX } from 'react';
 
 type TabKey = 'all' | 'active' | 'delivered' | 'cancelled';
 type DateFilter = 'all' | '7' | '30';

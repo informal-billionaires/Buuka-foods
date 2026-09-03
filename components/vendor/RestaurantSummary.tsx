@@ -152,7 +152,7 @@ export default function RestaurantSummary({
       }
 
       const { data: updated, error: updateError } = await supabase
-        .from<Restaurant>('restaurants')
+        .from('restaurants')
         .update(livePayload)
         .eq('id', restaurant.id)
         .select()

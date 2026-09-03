@@ -52,7 +52,7 @@ export default function VendorDashboardPage() {
 
         const userId = session.user.id;
         const { data: vendorRow, error: vendorError } = await supabase
-          .from<Vendor>('vendors')
+          .from('vendors')
           .select('*')
           .eq('id', userId)
           .single();
@@ -92,7 +92,7 @@ export default function VendorDashboardPage() {
       setRestError(null);
       try {
         const { data: restaurants, error: rErr } = await supabase
-          .from<Restaurant>('restaurants')
+          .from('restaurants')
           .select('*')
           .eq('vendor_id', vendor.id)
           .limit(1);

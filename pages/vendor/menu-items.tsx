@@ -35,7 +35,7 @@ export default function MenuItemsPage() {
       }
 
       const { data: vendorRow, error: vendorError } = await supabase
-        .from<Vendor>('vendors')
+        .from('vendors')
         .select('*')
         .eq('id', user.id)
         .single();
@@ -68,7 +68,7 @@ export default function MenuItemsPage() {
       setError(null);
 
       const { data: restaurants, error: restaurantError } = await supabase
-        .from<Restaurant>('restaurants')
+        .from('restaurants')
         .select('*')
         .eq('vendor_id', vendor.id)
         .limit(1);
@@ -92,7 +92,7 @@ export default function MenuItemsPage() {
       }
 
       const { data: items, error: menuError } = await supabase
-        .from<MenuItem>('menu_items')
+        .from('menu_items')
         .select('*')
         .eq('restaurant_id', currentRestaurant.id)
         .order('id', { ascending: true });

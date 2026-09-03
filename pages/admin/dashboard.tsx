@@ -86,7 +86,7 @@ export default function AdminDashboardPage() {
 
         // check admins table for this user
         const { data: adminRow, error: adminError } = await supabase
-          .from<AdminRow>('admins')
+          .from('admins')
           .select('*')
           .eq('id', userId)
           .single();
@@ -105,7 +105,7 @@ export default function AdminDashboardPage() {
         // fetch vendors (admin-wide)
         setVendorsLoading(true);
         const { data: vendorRows, error: vendorErr } = await supabase
-          .from<VendorType>('vendors')
+          .from('vendors')
           .select('*')
           .order('created_at', { ascending: false });
 
@@ -118,7 +118,7 @@ export default function AdminDashboardPage() {
           const vendorIds = (vendorRows || []).map(v => v.id);
           if (vendorIds.length > 0) {
             const { data: marginRows, error: marginErr } = await supabase
-              .from<Margin>('margins')
+              .from('margins')
               .select('*')
               .in('vendor_id', vendorIds);
 
