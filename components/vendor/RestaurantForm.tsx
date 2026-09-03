@@ -85,7 +85,7 @@ export default function RestaurantForm({ vendorId, onCreated }: RestaurantFormPr
       };
 
       const { data: inserted, error: insertErr } = await supabase
-        .from<Restaurant>('restaurants')
+        .from('restaurants')
         .insert([payload])
         .select()
         .single();
