@@ -24,6 +24,7 @@ export interface Restaurant {
   latitude?: number | null;
   longitude?: number | null;
   price_level?: string | null;
+  is_open?: boolean | null;
 }
 
 export interface MenuItem {
