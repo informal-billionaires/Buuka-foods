@@ -3,10 +3,14 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import NavBar from '../components/NavBar';
 import HeroLarge from '../components/HeroLarge';
-import InfoBar from '../components/InfoBar';
 import FeaturedRow from '../components/FeaturedRow';
 import RiderCard from '../components/RiderCard';
 import AddressModal from '../components/AddressModal';
+import CategoriesRow from '../components/CategoriesRow';
+import PopularNearYou from '../components/PopularNearYou';
+import PromoBanner from '../components/PromoBanner';
+import HowItWorks from '../components/HowItWorks';
+import TrustBadges from '../components/TrustBadges';
 
 export default function Home() {
   const router = useRouter();
@@ -96,21 +100,11 @@ export default function Home() {
         <main className="relative">
           {/* Hero */}
           <HeroLarge />
-
-          {/* Info / Featured layout */}
-          <div className="max-w-7xl mx-auto px-6 -mt-10 relative z-20">
-            <InfoBar />
-          </div>
-
-          <section className="max-w-7xl mx-auto px-6 mt-8 mb-20 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            <div className="lg:col-span-9">
-              <FeaturedRow />
-            </div>
-
-            <aside className="lg:col-span-3">
-              <RiderCard />
-            </aside>
-          </section>
+          <CategoriesRow />
+          <PopularNearYou />
+          <PromoBanner />
+          <HowItWorks />
+          <TrustBadges />
         </main>
 
       </div>

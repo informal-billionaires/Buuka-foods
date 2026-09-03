@@ -1,5 +1,10 @@
+export const DEFAULT_DELIVERY_FEE = 1200; // ₦ flat fee — placeholder until per-vendor fees exist
+
 export function computeCustomerPrice(basePrice: number, marginPercentage: number): number {
   const raw = basePrice * (1 + marginPercentage / 100);
   // round UP to nearest 100 naira
   return Math.ceil(raw / 100) * 100;
 }
+
+
+
