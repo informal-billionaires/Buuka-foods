@@ -34,7 +34,6 @@ export default function CustomerLoginPage() {
         return;
       }
 
-      // Optionally redirect to originally requested page
       const redirectTo = typeof router.query.redirectTo === 'string' ? router.query.redirectTo : '/';
       router.replace(redirectTo);
     } catch (err: any) {
@@ -50,33 +49,33 @@ export default function CustomerLoginPage() {
         <title>Log in — Bukka Foods</title>
       </Head>
 
-      <div className="min-h-screen bg-neutral-900 text-neutral-white flex items-center justify-center py-12">
+      <div className="min-h-screen bg-neutral-50 text-neutral-900 flex items-center justify-center py-12">
         <main className="w-full max-w-md px-6">
-          <div className="bg-neutral-950 rounded-2xl p-6">
+          <div className="bg-white border border-neutral-200 rounded-2xl p-6">
             <h1 className="text-xl font-bold mb-2">Log in</h1>
-            <p className="text-sm text-neutral-400 mb-4">Sign in to your account.</p>
+            <p className="text-sm text-neutral-500 mb-4">Sign in to your account.</p>
 
-            {error && <div className="text-sm text-rose-400 mb-3">{error}</div>}
+            {error && <div className="text-sm text-rose-600 mb-3">{error}</div>}
 
             <form onSubmit={handleSubmit} className="space-y-3">
               <div>
-                <label className="block text-xs text-neutral-400 mb-1">Email</label>
+                <label className="block text-xs text-neutral-500 mb-1">Email</label>
                 <input
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   type="email"
-                  className="w-full px-3 py-2 rounded-md bg-neutral-900 border border-neutral-800 text-sm"
+                  className="w-full px-3 py-2 rounded-md bg-white border border-neutral-200 text-sm text-neutral-900"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs text-neutral-400 mb-1">Password</label>
+                <label className="block text-xs text-neutral-500 mb-1">Password</label>
                 <input
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   type="password"
-                  className="w-full px-3 py-2 rounded-md bg-neutral-900 border border-neutral-800 text-sm"
+                  className="w-full px-3 py-2 rounded-md bg-white border border-neutral-200 text-sm text-neutral-900"
                   required
                 />
               </div>
@@ -85,14 +84,14 @@ export default function CustomerLoginPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className={`w-full inline-flex items-center justify-center px-4 py-2 rounded-full text-sm font-semibold ${loading ? 'bg-neutral-white/5 text-neutral-500' : 'bg-primary text-black'}`}
+                  className={`w-full inline-flex items-center justify-center px-4 py-2 rounded-full text-sm font-semibold ${loading ? 'bg-neutral-100 text-neutral-400' : 'bg-primary text-white'}`}
                 >
                   {loading ? 'Signing in…' : 'Sign in'}
                 </button>
               </div>
             </form>
 
-            <div className="mt-4 text-center text-sm text-neutral-400">
+            <div className="mt-4 text-center text-sm text-neutral-500">
               Don't have an account? <a className="text-primary underline" href={router.query.redirectTo ? 
               `/account/signup?redirectTo=${encodeURIComponent(router.query.redirectTo as string)}` : 
               '/account/signup'}>
