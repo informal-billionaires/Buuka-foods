@@ -23,7 +23,6 @@ export default function MenuItemRow({ item, openPanelItemId, setOpenPanelItemId,
   const sizes = item.sizes || [];
   const hasCustomizations = !!(item.customizations && item.customizations.length > 0);
 
-  // Local state owned by this component
   const [selectedSizeIndex, setSelectedSizeIndex] = useState<number>(() => (sizes.length ? 0 : -1));
   const [panelQty, setPanelQty] = useState<number>(1);
   const [panelSelectedCustomizations, setPanelSelectedCustomizations] = useState<Record<string, boolean>>(() => {
@@ -32,7 +31,6 @@ export default function MenuItemRow({ item, openPanelItemId, setOpenPanelItemId,
     return map;
   });
 
-  // displayed price respects selectedSizeIndex locally
   const displayedPrice = useMemo(() => {
     const base = Number(item.price || 0);
     const sizeMod = (selectedSizeIndex >= 0 && sizes[selectedSizeIndex]) ? Number(sizes[selectedSizeIndex].priceModifier || 0) : 0;
@@ -42,7 +40,6 @@ export default function MenuItemRow({ item, openPanelItemId, setOpenPanelItemId,
   function openPanel() {
     setPanelQty(1);
     setPanelSelectedCustomizations((prev) => {
-      // reset selections
       const initial: Record<string, boolean> = {};
       (item.customizations || []).forEach(c => { initial[c.label] = false; });
       return initial;
@@ -59,7 +56,6 @@ export default function MenuItemRow({ item, openPanelItemId, setOpenPanelItemId,
       openPanel();
       return;
     }
-    // no customizations: add directly with current size selection (if any)
     const sizeLabel = selectedSizeIndex >= 0 && sizes[selectedSizeIndex] ? sizes[selectedSizeIndex].label : undefined;
     const sizeModifier = selectedSizeIndex >= 0 && sizes[selectedSizeIndex] ? Number(sizes[selectedSizeIndex].priceModifier || 0) : 0;
     const unitPrice = Number(item.price || 0) + sizeModifier;
@@ -77,7 +73,6 @@ export default function MenuItemRow({ item, openPanelItemId, setOpenPanelItemId,
     }, 0);
     const unitPrice = base + sizeModifier + customPrice;
     onConfirm({ itemId, name: item.name || '', unitPrice, qty: panelQty, size: sizeLabel, customizations: selectedCustomizations });
-    // close panel and reset panel state
     setOpenPanelItemId(null);
     setPanelQty(1);
     setPanelSelectedCustomizations((prev) => {
@@ -88,7 +83,7 @@ export default function MenuItemRow({ item, openPanelItemId, setOpenPanelItemId,
   }
 
   return (
-    <div className="bg-neutral-800/40 rounded-xl p-4">
+    <div className="bg-white border border-neutral-200 rounded-xl p-4">
       <div className="flex items-start gap-4">
         <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
           <img src={item.image || '/images/placeholder-food.jpg'} alt={item.name} className="w-full h-full object-cover" />
@@ -96,11 +91,11 @@ export default function MenuItemRow({ item, openPanelItemId, setOpenPanelItemId,
 
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-4">
-            <h3 className="text-sm font-semibold truncate">{item.name}</h3>
-            <div className="text-sm font-semibold text-white">₦{displayedPrice}</div>
+            <h3 className="text-sm font-semibold text-neutral-900 truncate">{item.name}</h3>
+            <div className="text-sm font-semibold text-neutral-900">₦{displayedPrice}</div>
           </div>
 
-          {item.description && <p className="text-xs text-neutral-300 mt-1 line-clamp-2">{item.description}</p>}
+          {item.description && <p className="text-xs text-neutral-500 mt-1 line-clamp-2">{item.description}</p>}
 
           {sizes.length > 0 && (
             <div className="mt-3 flex items-center gap-2 flex-wrap">
@@ -111,7 +106,7 @@ export default function MenuItemRow({ item, openPanelItemId, setOpenPanelItemId,
                     key={s.label + idx}
                     type="button"
                     onClick={() => setSelectedSizeIndex(idx)}
-                    className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${selected ? 'bg-primary text-neutral-black' : 'bg-neutral-white/5 text-neutral-white/90'}`}
+                    className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${selected ? 'bg-primary text-white' : 'bg-neutral-100 text-neutral-700'}`}
                   >
                     {s.label}
                   </button>
@@ -125,7 +120,7 @@ export default function MenuItemRow({ item, openPanelItemId, setOpenPanelItemId,
             <div>
               <button
                 onClick={handleDirectAdd}
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary text-black text-sm font-semibold"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary text-white text-sm font-semibold"
               >
                 Add
               </button>
@@ -134,15 +129,14 @@ export default function MenuItemRow({ item, openPanelItemId, setOpenPanelItemId,
         </div>
       </div>
 
-      {/* Inline customization panel */}
       {openPanelItemId === itemId && hasCustomizations && (
-        <div className="mt-3 p-4 bg-neutral-900 rounded-md border border-neutral-800">
+        <div className="mt-3 p-4 bg-neutral-50 rounded-md border border-neutral-200">
           <div className="grid gap-3">
             <div>
-              <div className="text-sm font-medium mb-2">Customizations</div>
+              <div className="text-sm font-medium text-neutral-900 mb-2">Customizations</div>
               <div className="flex gap-2 flex-wrap">
                 {(item.customizations || []).map((c) => (
-                  <label key={c.label} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-neutral-white/5 text-sm cursor-pointer">
+                  <label key={c.label} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-neutral-200 text-sm text-neutral-700 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={!!panelSelectedCustomizations[c.label]}
@@ -155,18 +149,18 @@ export default function MenuItemRow({ item, openPanelItemId, setOpenPanelItemId,
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="text-sm">Quantity</div>
+              <div className="text-sm text-neutral-900">Quantity</div>
               <div className="inline-flex items-center gap-2">
                 <button
                   onClick={() => setPanelQty(q => Math.max(1, q - 1))}
-                  className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-neutral-white/5"
+                  className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-neutral-100 text-neutral-700"
                 >
                   −
                 </button>
-                <div className="w-8 text-center">{panelQty}</div>
+                <div className="w-8 text-center text-neutral-900">{panelQty}</div>
                 <button
                   onClick={() => setPanelQty(q => q + 1)}
-                  className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-neutral-white/5"
+                  className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-neutral-100 text-neutral-700"
                 >
                   +
                 </button>
@@ -175,13 +169,13 @@ export default function MenuItemRow({ item, openPanelItemId, setOpenPanelItemId,
               <div className="ml-auto flex gap-2">
                 <button
                   onClick={() => { setOpenPanelItemId(null); }}
-                  className="px-3 py-1.5 rounded-full bg-neutral-white/5 text-sm"
+                  className="px-3 py-1.5 rounded-full bg-neutral-100 text-neutral-700 text-sm"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={confirmPanel}
-                  className="px-3 py-1.5 rounded-full bg-primary text-black text-sm font-semibold"
+                  className="px-3 py-1.5 rounded-full bg-primary text-white text-sm font-semibold"
                 >
                   Confirm
                 </button>

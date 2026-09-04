@@ -24,7 +24,7 @@ export default function CategoriesRow() {
       </div>
 
       <div className="flex items-center gap-3 justify-center">
-        <div className="flex gap-3 overflow-x-auto scrollbar-hide">
+        <div className="flex gap-3 overflow-x-auto no-scrollbar">
           {CATEGORIES.map((cat) => {
             const isActive = active === cat.label;
             return (

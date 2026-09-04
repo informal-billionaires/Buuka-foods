@@ -3,8 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import NavBar from '../components/NavBar';
 import HeroLarge from '../components/HeroLarge';
-import FeaturedRow from '../components/FeaturedRow';
-import RiderCard from '../components/RiderCard';
 import AddressModal from '../components/AddressModal';
 import CategoriesRow from '../components/CategoriesRow';
 import PopularNearYou from '../components/PopularNearYou';

@@ -11,7 +11,7 @@ import type { Restaurant } from '../lib/restaurants';
 
 function haversineKm(lat1: number, lon1: number, lat2: number, lon2: number) {
   const toRad = (v: number) => v * Math.PI / 180;
-  const R = 6371; // km
+  const R = 6371;
   const dLat = toRad(lat2 - lat1);
   const dLon = toRad(lon2 - lon1);
   const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
@@ -34,12 +34,9 @@ export default function BrowsePage() {
   const [showModal, setShowModal] = useState(false);
   const [userCoords, setUserCoords] = useState<Coords>(null);
 
-  
   const [allRestaurants, setAllRestaurants] = useState<Restaurant[]>([]);
   const [restaurantsLoading, setRestaurantsLoading] = useState<boolean>(true);
 
-  // Guard so the effect doesn't re-run the fallback address checks
-  // after skipAddressPrompt has already resolved hasAddress=true.
   const skippedRef = useRef(false);
 
   const RADIUS_KM = 10;
@@ -47,22 +44,17 @@ export default function BrowsePage() {
   useEffect(() => {
     if (!router.isReady) return;
 
-    // If page opened with ?skipAddressPrompt=1, bypass the address prompt and show browse UI
     if (router.query.skipAddressPrompt === '1') {
       skippedRef.current = true;
       try { sessionStorage.setItem('skipAddressPrompt', '1'); } catch {}
       setHasAddress(true);
-      // remove the param so it doesn't persist in the URL
       const { skipAddressPrompt, ...rest } = router.query;
       router.replace({ pathname: router.pathname, query: rest }, undefined, { shallow: true });
       return;
     }
 
-    // Already resolved via skip earlier in this render cycle — don't
-    // let the fallback checks below overwrite hasAddress back to false.
     if (skippedRef.current) return;
 
-    // auto open modal when ?enterAddress=1 present
     if (router.query.enterAddress) {
       setShowModal(true);
       const { enterAddress, ...rest } = router.query;
@@ -70,7 +62,6 @@ export default function BrowsePage() {
       return;
     }
 
-    // Query lat/lng in url?
     const latQ = typeof router.query.lat === 'string' ? Number(router.query.lat) : undefined;
     const lngQ = typeof router.query.lng === 'string' ? Number(router.query.lng) : undefined;
     if (typeof latQ === 'number' && !Number.isNaN(latQ) && typeof lngQ === 'number' && !Number.isNaN(lngQ)) {
@@ -80,7 +71,6 @@ export default function BrowsePage() {
       return;
     }
 
-    // Query q?
     const qParam = typeof router.query.q === 'string' ? router.query.q : '';
     if (qParam) {
       setQuery(qParam);
@@ -89,7 +79,6 @@ export default function BrowsePage() {
       return;
     }
 
-    // sessionStorage fallback — set earlier in this session via skipAddressPrompt
     try {
       if (sessionStorage.getItem('skipAddressPrompt') === '1') {
         setHasAddress(true);
@@ -97,7 +86,6 @@ export default function BrowsePage() {
       }
     } catch {}
 
-    // localStorage fallback
     try {
       const addr = localStorage.getItem('deliveryAddress');
       const coordsRaw = localStorage.getItem('deliveryCoords');
@@ -122,14 +110,9 @@ export default function BrowsePage() {
     }
   }, [router.isReady, router.query.lat, router.query.lng, router.query.q, router.query.enterAddress, router.query.skipAddressPrompt]);
 
-  // Redirect users without a saved address back to the homepage,
-  // where ?enterAddress=1 will automatically open AddressModal.
   useEffect(() => {
     if (!router.isReady) return;
-
-    // Wait until address detection has completed.
     if (hasAddress !== false) return;
-
     router.replace('/?enterAddress=1');
   }, [router.isReady, hasAddress, router]);
 
@@ -142,18 +125,14 @@ export default function BrowsePage() {
         if (!mounted) return;
         setAllRestaurants(rows);
       } catch (err) {
-        // getApprovedRestaurants already logs; keep UI working
         console.error('Error loading restaurants', err);
         if (mounted) setAllRestaurants([]);
       } finally {
         if (mounted) setRestaurantsLoading(false);
       }
     }
-
     load();
-    return () => {
-      mounted = false;
-    };
+    return () => { mounted = false; };
   }, []);
 
   function handleOpenModal() {
@@ -177,11 +156,6 @@ export default function BrowsePage() {
     }
   }
 
-  /**
-   * Compute filtered list unconditionally so hooks order remains stable.
-   * If address isn't ready (null) or not set (false) we return an empty list here
-   * and later render the AddressRequired UI.
-   */
   const filtered = useMemo(() => {
     if (hasAddress === null || hasAddress === false) {
       return [] as Array<Restaurant & { __distanceKm?: number }>;
@@ -203,7 +177,6 @@ export default function BrowsePage() {
         .map(r => {
           const latVal = (r as any).latitude;
           const lngVal = (r as any).longitude;
-          // Treat missing/null/invalid coords as "unknown distance" (null)
           const hasValidCoords =
             latVal !== null &&
             latVal !== undefined &&
@@ -216,20 +189,16 @@ export default function BrowsePage() {
             : null;
           return { ...r, __distanceKm: dist as number | null };
         })
-        // Keep restaurants with unknown distance (null) and those within the radius.
         .filter(r => {
-          // if distance is unknown -> keep
           if (r.__distanceKm === null) return true;
-          // if distance is known -> only keep if within radius
           return r.__distanceKm <= RADIUS_KM;
         })
-        // Sort: known distances ascending, unknown distances at the end
         .sort((a, b) => {
           const da = a.__distanceKm;
           const db = b.__distanceKm;
           if (da === null && db === null) return 0;
-          if (da === null) return 1; // a unknown -> after b
-          if (db === null) return -1; // b unknown -> after a
+          if (da === null) return 1;
+          if (db === null) return -1;
           return da - db;
         });
     } else {
@@ -242,10 +211,10 @@ export default function BrowsePage() {
 
     return items;
   }, [query, category, sortBy, onlyOpen, userCoords, hasAddress, allRestaurants]);
-  // Render while we check for an address
+
   if (hasAddress === null) {
     return (
-      <div className="min-h-screen bg-neutral-black text-neutral-white">
+      <div className="min-h-screen bg-neutral-50 text-neutral-900">
         <NavBar />
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="text-center">Checking address…</div>
@@ -254,14 +223,12 @@ export default function BrowsePage() {
     );
   }
 
-
   if (hasAddress === false) {
-  // we've already kicked off a router.replace in the effect above; render minimal UI while redirect happens
     return (
-      <div className="min-h-screen bg-neutral-black text-neutral-white">
+      <div className="min-h-screen bg-neutral-50 text-neutral-900">
         <NavBar />
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className="text-center text-neutral-400">Redirecting…</div>
+          <div className="text-center text-neutral-500">Redirecting…</div>
         </main>
       </div>
     );
@@ -269,23 +236,22 @@ export default function BrowsePage() {
 
   if (restaurantsLoading && hasAddress) {
     return (
-      <div className="min-h-screen bg-neutral-black text-neutral-white">
+      <div className="min-h-screen bg-neutral-50 text-neutral-900">
         <NavBar />
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className="text-center text-neutral-400">Loading restaurants…</div>
+          <div className="text-center text-neutral-500">Loading restaurants…</div>
         </main>
       </div>
     );
   }
 
-  // Normal browse UI when address exists
   return (
     <>
       <Head>
         <title>Browse — Bukka Foods</title>
       </Head>
 
-      <div className="min-h-screen bg-neutral-black text-neutral-white">
+      <div className="min-h-screen bg-neutral-50 text-neutral-900">
         <NavBar />
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -296,9 +262,9 @@ export default function BrowsePage() {
               </div>
 
               <div className="flex items-center gap-3">
-                <div className="hidden sm:block text-sm text-neutral-white/70 mr-2">View</div>
-                <button onClick={() => setView('grid')} className={`px-3 py-2 rounded-xl ${view === 'grid' ? 'bg-primary text-neutral-black' : 'bg-neutral-white/5'}`}>Grid</button>
-                <button onClick={() => setView('list')} className={`px-3 py-2 rounded-xl ${view === 'list' ? 'bg-primary text-neutral-black' : 'bg-neutral-white/5'}`}>List</button>
+                <div className="hidden sm:block text-sm text-neutral-500 mr-2">View</div>
+                <button onClick={() => setView('grid')} className={`px-3 py-2 rounded-xl ${view === 'grid' ? 'bg-primary text-white' : 'bg-white border border-neutral-200 text-neutral-700'}`}>Grid</button>
+                <button onClick={() => setView('list')} className={`px-3 py-2 rounded-xl ${view === 'list' ? 'bg-primary text-white' : 'bg-white border border-neutral-200 text-neutral-700'}`}>List</button>
               </div>
             </div>
 
@@ -307,7 +273,7 @@ export default function BrowsePage() {
             <section>
               <div className={`grid gap-6 ${view === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
                 {filtered.length === 0 && (
-                  <div className="p-8 bg-neutral-white/3 rounded-xl">No restaurants match your search.</div>
+                  <div className="p-8 bg-white border border-neutral-200 rounded-xl text-neutral-500">No restaurants match your search.</div>
                 )}
 
                 {filtered.map((r) => (

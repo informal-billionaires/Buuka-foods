@@ -39,7 +39,7 @@ export default function PopularNearYou() {
       </div>
 
       <div className="flex items-center gap-3">
-        <div className="flex gap-5 overflow-x-auto scrollbar-hide">
+        <div className="flex gap-5 overflow-x-auto no-scrollbar">
           {restaurants.map((r) => (
             <Link
               key={r.id}

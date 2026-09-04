@@ -19,7 +19,7 @@ export default function FiltersBar({ selectedCategory, onSelectCategory, sortBy,
           <button
             key={cat}
             onClick={() => onSelectCategory(cat === 'All' ? null : cat)}
-            className={`px-3 py-2 rounded-full ${selectedCategory === cat || (cat === 'All' && !selectedCategory) ? 'bg-primary text-neutral-black' : 'bg-neutral-white/5 text-neutral-white/80'}`}
+            className={`px-3 py-2 rounded-full text-sm ${selectedCategory === cat || (cat === 'All' && !selectedCategory) ? 'bg-primary text-white' : 'bg-white border border-neutral-200 text-neutral-700'}`}
           >
             {cat}
           </button>
@@ -27,8 +27,8 @@ export default function FiltersBar({ selectedCategory, onSelectCategory, sortBy,
       </div>
 
       <div className="flex items-center gap-3">
-        <label className="text-sm text-neutral-white/60">Sort</label>
-        <select value={sortBy} onChange={(e) => onSortChange(e.target.value as any)} className="rounded-xl bg-neutral-white/5 py-2 px-3">
+        <label className="text-sm text-neutral-500">Sort</label>
+        <select value={sortBy} onChange={(e) => onSortChange(e.target.value as any)} className="rounded-xl bg-white border border-neutral-200 text-neutral-700 py-2 px-3">
           <option value="rating">Top rated</option>
           <option value="delivery">Delivery time</option>
           <option value="distance">Distance</option>
@@ -36,7 +36,7 @@ export default function FiltersBar({ selectedCategory, onSelectCategory, sortBy,
 
         <label className="inline-flex items-center gap-2 ml-2 text-sm">
           <input type="checkbox" checked={onlyOpen} onChange={onToggleOpen} className="accent-primary" />
-          <span className="text-neutral-white/70">Open now</span>
+          <span className="text-neutral-600">Open now</span>
         </label>
       </div>
     </div>
