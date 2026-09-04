@@ -92,34 +92,34 @@ export default function VendorLogin() {
     <>
       <Head><title>Vendor Log in — Bukka Foods</title></Head>
 
-      <div className="min-h-screen bg-neutral-900 text-neutral-white flex items-center justify-center py-12">
+      <div className="min-h-screen bg-page text-neutral-charcoal flex items-center justify-center py-12">
         <main className="w-full max-w-md px-6">
-          <div className="bg-neutral-950 rounded-2xl p-6">
+          <div className="bg-surface rounded-2xl p-6 shadow-soft-lg border border-neutral-lightGray">
             <h1 className="text-xl font-bold mb-2">Vendor log in</h1>
-            <p className="text-sm text-neutral-400 mb-4">Access your vendor dashboard and application status.</p>
+            <p className="text-sm text-muted mb-4">Access your vendor dashboard and application status.</p>
 
-            {error && <div className="text-sm text-rose-400 mb-3">{error}</div>}
-            {rejectedMessage && <div className="text-sm text-rose-400 mb-3">{rejectedMessage}</div>}
+            {error && <div className="text-sm text-status-error mb-3">{error}</div>}
+            {rejectedMessage && <div className="text-sm text-status-error mb-3">{rejectedMessage}</div>}
 
             <form onSubmit={handleSubmit} className="space-y-3">
               <div>
-                <label className="block text-xs text-neutral-400 mb-1">Email</label>
+                <label className="block text-xs text-muted mb-1">Email</label>
                 <input
                   value={form.email}
                   onChange={(e) => update('email', e.target.value)}
                   type="email"
-                  className="w-full px-3 py-2 rounded-md bg-neutral-900 border border-neutral-800 text-sm"
+                  className="w-full px-3 py-2 rounded-md bg-neutral-white border border-neutral-lightGray text-sm text-neutral-charcoal"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs text-neutral-400 mb-1">Password</label>
+                <label className="block text-xs text-muted mb-1">Password</label>
                 <input
                   value={form.password}
                   onChange={(e) => update('password', e.target.value)}
                   type="password"
-                  className="w-full px-3 py-2 rounded-md bg-neutral-900 border border-neutral-800 text-sm"
+                  className="w-full px-3 py-2 rounded-md bg-neutral-white border border-neutral-lightGray text-sm text-neutral-charcoal"
                   required
                 />
               </div>
@@ -128,14 +128,14 @@ export default function VendorLogin() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className={`w-full inline-flex items-center justify-center px-4 py-2 rounded-full text-sm font-semibold ${loading ? 'bg-neutral-white/5 text-neutral-500' : 'bg-primary text-black'}`}
+                  className={`w-full inline-flex items-center justify-center px-4 py-2 rounded-full text-sm font-semibold ${loading ? 'bg-neutral-lightGray text-muted' : 'bg-primary text-neutral-white'}`}
                 >
                   {loading ? 'Signing in…' : 'Sign in'}
                 </button>
               </div>
             </form>
 
-            <div className="mt-4 text-center text-sm text-neutral-400">
+            <div className="mt-4 text-center text-sm text-muted">
               Don't have an account?{' '}
               <Link href="/vendor/signup" className="text-primary font-medium">Sign up</Link>
             </div>
