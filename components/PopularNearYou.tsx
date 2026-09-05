@@ -18,11 +18,11 @@ export default function PopularNearYou() {
 
   if (loading) {
     return (
-      <section className="max-w-7xl mx-auto px-6 py-8">
+      <section className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
         <div className="h-6 w-40 bg-neutral-200 rounded animate-pulse mb-4" />
-        <div className="flex gap-5 overflow-x-auto">
+        <div className="flex gap-4 md:gap-5 overflow-x-auto">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="w-56 h-64 flex-shrink-0 bg-neutral-100 rounded-2xl animate-pulse" />
+            <div key={i} className="w-40 md:w-56 h-52 md:h-64 flex-shrink-0 bg-neutral-100 rounded-2xl animate-pulse" />
           ))}
         </div>
       </section>
@@ -32,31 +32,29 @@ export default function PopularNearYou() {
   if (restaurants.length === 0) return null; // data honesty: no fake fallback cards
 
   return (
-    <section className="max-w-7xl mx-auto px-6 py-8">
+    <section className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-neutral-900">Popular near you</h2>
+        <h2 className="text-base md:text-lg font-semibold text-neutral-900">Popular near you</h2>
         <Link href="/browse" className="text-sm text-primary font-medium">View all</Link>
       </div>
-
       <div className="flex items-center gap-3">
-        <div className="flex gap-5 overflow-x-auto no-scrollbar">
+        <div className="flex gap-4 md:gap-5 overflow-x-auto no-scrollbar">
           {restaurants.map((r) => (
             <Link
               key={r.id}
               href={`/restaurants/${r.id}`}
-              className="w-56 flex-shrink-0 bg-white border border-neutral-200 rounded-2xl overflow-hidden"
+              className="w-40 md:w-56 flex-shrink-0 bg-white border border-neutral-200 rounded-2xl overflow-hidden"
             >
-              <div className="relative w-full h-36 bg-neutral-100">
+              <div className="relative w-full h-28 md:h-36 bg-neutral-100">
                 <img
                   src={r.cover || '/images/placeholder-restaurant.jpg'}
                   alt={r.name}
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="p-3">
-                <div className="text-sm font-semibold text-neutral-900">{r.name}</div>
-                <div className="text-xs text-neutral-500 mt-0.5">{r.cuisine ?? '—'}</div>
-
+              <div className="p-2.5 md:p-3">
+                <div className="text-sm font-semibold text-neutral-900 truncate">{r.name}</div>
+                <div className="text-xs text-neutral-500 mt-0.5 truncate">{r.cuisine ?? '—'}</div>
                 <div className="flex items-center gap-1 mt-2 text-xs text-neutral-600">
                   {r.rating != null && r.rating > 0 ? (
                     <>
@@ -67,7 +65,6 @@ export default function PopularNearYou() {
                     <span className="text-neutral-400">No ratings yet</span>
                     )}
                 </div>
-
                 <div className="text-xs font-medium text-neutral-700 mt-1">
                   Delivery from ₦{DEFAULT_DELIVERY_FEE}
                 </div>
@@ -75,10 +72,9 @@ export default function PopularNearYou() {
             </Link>
           ))}
         </div>
-
         <button
           aria-label="Scroll popular restaurants"
-          className="flex-shrink-0 w-9 h-9 rounded-full border border-neutral-200 flex items-center justify-center text-neutral-500"
+          className="hidden md:flex flex-shrink-0 w-9 h-9 rounded-full border border-neutral-200 items-center justify-center text-neutral-500"
         >
           <ChevronRight className="w-4 h-4" />
         </button>

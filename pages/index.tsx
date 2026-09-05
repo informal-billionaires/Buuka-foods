@@ -9,6 +9,7 @@ import PopularNearYou from '../components/PopularNearYou';
 import PromoBanner from '../components/PromoBanner';
 import HowItWorks from '../components/HowItWorks';
 import TrustBadges from '../components/TrustBadges';
+import HomeSearchBar from '../components/HomeSearchBar';
 
 export default function Home() {
   const router = useRouter();
@@ -82,11 +83,12 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Bukka Foods — Crave it. We deliver.</title>
+        <title>Bukka Foods, Order from trusted local restaurants and get your food delivered fast.</title>
       </Head>
 
       <div className="min-h-screen bg-neutral-100 text-neutral-black">
         <NavBar />
+        <HomeSearchBar />
       
       <AddressModal
         isOpen={showAddressModal}

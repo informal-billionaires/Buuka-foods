@@ -1,0 +1,15 @@
+﻿
+Add mobile responsive layout for homepage + notifications and live search
+
+- Add mobile-only header row (hamburger, logo, location pill, cart, bell)
+
+- Add slide-in mobile nav drawer (Home/Browse/Orders/Favorites/Become a Vendor)
+
+- Add notifications schema (lib/notifications.ts) and bell icon w/ unread badge
+
+- Add live restaurant search dropdown on homepage (mobile-only, HomeSearchBar.tsx)
+
+- Redesign mobile hero: card + inline SVG illustration, Order Now CTA (desktop hero unchanged)
+
+- Restyle CategoriesRow, PopularNearYou, PromoBanner, HowItWorks, TrustBadges for mobile breakpoints
+

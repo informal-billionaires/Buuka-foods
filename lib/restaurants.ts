@@ -141,6 +141,51 @@ export async function getApprovedRestaurants(): Promise<Restaurant[]> {
   }
 }
 
+export async function searchRestaurants(query: string): Promise<Restaurant[]> {
+  const trimmed = query.trim();
+  if (!trimmed) return [];
+
+  try {
+    const { data, error } = await supabase
+      .from('restaurants')
+      .select('*, vendors!inner(status)')
+      .eq('vendors.status', 'approved')
+      .or(`name.ilike.%${trimmed}%,cuisine.ilike.%${trimmed}%`)
+      .limit(8);
+
+    if (error) {
+      console.error('searchRestaurants error:', error);
+      return [];
+    }
+
+    if (!data) return [];
+
+    const mapped: Restaurant[] = data.map((r) => ({
+      id: r.id,
+      vendorId: r.vendor_id,
+      name: r.name ?? null,
+      cuisine: r.cuisine ?? null,
+      tags: (r as any).tags ?? null,
+      rating: r.rating ?? null,
+      deliveryTime: r.delivery_time ?? null,
+      distance: r.distance ?? null,
+      isOpen: r.is_open ?? null,
+      priceLevel: r.price_level ?? null,
+      description: r.description ?? null,
+      cover: r.cover ?? null,
+      location: r.location ?? null,
+      hours: r.hours ?? null,
+      latitude: r.latitude ?? null,
+      longitude: r.longitude ?? null,
+    }));
+
+    return mapped;
+  } catch (err) {
+    console.error('searchRestaurants unexpected error:', err);
+    return [];
+  }
+}
+
 export async function getRestaurantById(id: string): Promise<Restaurant | null> {
   try {
     const { data, error } = await supabase

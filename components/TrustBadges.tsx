@@ -26,18 +26,18 @@ const badges = [
 
 export default function TrustBadges() {
   return (
-    <section className="max-w-7xl mx-auto px-6 pb-12">
-      <div className="border border-neutral-200 rounded-2xl p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <section className="max-w-7xl mx-auto px-4 md:px-6 pb-8 md:pb-12">
+      <div className="border border-neutral-200 rounded-2xl p-3 md:p-6 grid grid-cols-4 gap-2 md:gap-6">
         {badges.map((b) => {
           const Icon = b.icon;
           return (
-            <div key={b.title} className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                <Icon className="w-5 h-5 text-primary" />
+            <div key={b.title} className="flex flex-col md:flex-row items-center md:items-start text-center md:text-left gap-1.5 md:gap-3">
+              <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <Icon className="w-4 h-4 md:w-5 md:h-5 text-primary" />
               </div>
               <div>
-                <div className="text-sm font-semibold text-neutral-900">{b.title}</div>
-                <div className="text-xs text-neutral-500 mt-0.5">{b.subtitle}</div>
+                <div className="text-[10px] md:text-sm font-semibold text-neutral-900 leading-tight">{b.title}</div>
+                <div className="hidden md:block text-xs text-neutral-500 mt-0.5">{b.subtitle}</div>
               </div>
             </div>
           );
